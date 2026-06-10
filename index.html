@@ -1,355 +1,274 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI TTS 음성 변환기</title>
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #e3f2fd, #fce4ec);
-      font-family: Arial, sans-serif;
-      color: #333;
-    }
-
-    .container {
-      width: min(900px, 92%);
-      margin: 40px auto;
-      background: #ffffff;
-      border-radius: 24px;
-      padding: 28px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.16);
-    }
-
-    h1 {
-      margin: 0 0 8px;
-      text-align: center;
-      font-size: 28px;
-    }
-
-    .subtitle {
-      text-align: center;
-      color: #777;
-      margin-bottom: 24px;
-      font-size: 14px;
-    }
-
-    .info {
-      padding: 14px;
-      margin-bottom: 20px;
-      border-radius: 14px;
-      background: #e8f5e9;
-      color: #2e7d32;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .option-box {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-
-    select, input {
-      height: 44px;
-      padding: 0 12px;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      font-size: 14px;
-      outline: none;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 180px;
-      resize: vertical;
-      padding: 16px;
-      border: 1px solid #ddd;
-      border-radius: 16px;
-      font-size: 16px;
-      line-height: 1.5;
-      outline: none;
-      font-family: Arial, sans-serif;
-    }
-
-    textarea:focus, select:focus, input:focus {
-      border-color: #42a5f5;
-      box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.15);
-    }
-
-    .label {
-      font-weight: bold;
-      margin-bottom: 6px;
-    }
-
-    .button-row {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-      margin-top: 14px;
-    }
-
-    button, .download-link {
-      border: none;
-      border-radius: 12px;
-      padding: 0 18px;
-      height: 46px;
-      font-size: 15px;
-      cursor: pointer;
-      transition: 0.15s;
-      font-weight: bold;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    button:hover, .download-link:hover {
-      transform: translateY(-2px);
-      opacity: 0.9;
-    }
-
-    button:disabled {
-      cursor: not-allowed;
-      opacity: 0.6;
-      transform: none;
-    }
-
-    .make-btn {
-      background: #42a5f5;
-      color: white;
-    }
-
-    .clear-btn {
-      background: #b0bec5;
-      color: white;
-    }
-
-    .download-link {
-      background: #7e57c2;
-      color: white;
-    }
-
-    .hidden { display: none; }
-
-    .status {
-      min-height: 24px;
-      margin-top: 14px;
-      color: #555;
-      font-size: 14px;
-    }
-
-    .result-box {
-      margin-top: 20px;
-      padding: 18px;
-      border-radius: 18px;
-      background: #f7f9fb;
-      border: 1px solid #edf1f5;
-    }
-
-    audio {
-      width: 100%;
-      margin-top: 10px;
-    }
-
-    .help {
-      margin-top: 12px;
-      font-size: 13px;
-      color: #777;
-      line-height: 1.6;
-    }
-
-    @media (max-width: 700px) {
-      .option-box { grid-template-columns: 1fr; }
-      .button-row { justify-content: stretch; }
-      button, .download-link { width: 100%; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDG 17: 글로벌 사회 연대 플랫폼 (GPT 연동형)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div class="container">
-    <h1>AI TTS 음성 변환기</h1>
-    <div class="subtitle">텍스트를 AI 음성 mp3 파일로 변환합니다</div>
+<body class="bg-slate-50 text-slate-800 min-h-screen font-sans">
 
-    <div class="info">
-      현재 구조: GitHub Pages 화면 → Google Apps Script 서버 → OpenAI TTS API → mp3 음성 반환<br />
-      API Key는 index.html에 들어가지 않고 Apps Script의 스크립트 속성에 저장됩니다.
+    <nav class="bg-emerald-900 text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold tracking-wide">🌐 SDG 17 사회학 연대 광장 (OpenAI GPT)</h1>
+            <div id="auth-status" class="text-sm">
+                <span id="user-info" class="mr-4 hidden"></span>
+                <button id="btn-logout" class="bg-rose-600 hover:bg-rose-700 px-3 py-1 rounded hidden transition text-xs font-medium">로그아웃</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto max-w-5xl p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <div class="md:col-span-1 space-y-6">
+            
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                <h2 class="text-lg font-bold mb-2 text-emerald-900 flex items-center gap-1">⚙️ 보안 환경 설정</h2>
+                <p class="text-xs text-slate-500 mb-4">GitHub 보안 유출을 막기 위해 API 키와 Firebase 정보를 화면에서 안전하게 입력합니다.</p>
+                
+                <div class="space-y-4 text-sm">
+                    <div>
+                        <label class="block font-semibold text-slate-700">OpenAI API Key</label>
+                        <input type="password" id="api-key-openai" class="w-full p-2 border border-slate-300 rounded mt-1 focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="sk-proj-...">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700">Firebase Config (JSON)</label>
+                        <textarea id="firebase-config-input" rows="5" class="w-full p-2 border border-slate-300 rounded text-xs mt-1 font-mono focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder='{\n  "apiKey": "...",\n  "authDomain": "...",\n  "databaseURL": "...",\n  "projectId": "...",\n  "storageBucket": "...",\n  "messagingSenderId": "...",\n  "appId": "..."\n}'></textarea>
+                    </div>
+                    <button id="btn-save-config" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 rounded-lg font-medium transition shadow-sm">설정 적용하기</button>
+                </div>
+            </div>
+
+            <div id="auth-card" class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 opacity-60">
+                <h2 class="text-lg font-bold mb-3 text-emerald-900">🔑 연구원 참여 인증</h2>
+                <p class="text-xs text-slate-500 mb-3">시스템 설정을 먼저 완료한 후 로그인할 수 있습니다.</p>
+                <div class="space-y-3 text-sm">
+                    <input type="email" id="auth-email" class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="이메일 주소">
+                    <input type="password" id="auth-password" class="w-full p-2 border border-slate-300 rounded focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="비밀번호">
+                    <div class="flex gap-2 pt-1">
+                        <button id="btn-login" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded font-medium transition">로그인</button>
+                        <button id="btn-signup" class="flex-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-900 py-2 rounded font-medium transition">회원가입</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="md:col-span-2 space-y-6">
+            
+            <div id="main-app-area" class="opacity-40 pointer-events-none transition-all duration-300">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
+                    <h2 class="text-xl font-bold mb-2 text-emerald-900">✍️ 사회적 의제 제기 (SDG 17)</h2>
+                    <p class="text-sm text-slate-600 mb-4">양극화, 환경 불평등, 글로벌 연대 부족 등 우리 사회가 직면한 거시적 문제를 던져주세요.</p>
+                    
+                    <textarea id="issue-text" rows="4" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none mb-3 resize-none" placeholder="예시: 소득 불평등 심화에 따른 계층 간 사회적 자본의 단절과 연대 붕괴 현상에 대하여..."></textarea>
+                    
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <span class="text-xs text-amber-600 font-medium">※ 발제 시 OpenAI GPT 사회학자가 이론적 심층 비평을 자동으로 수행합니다.</span>
+                        <button id="btn-submit-issue" class="w-full sm:w-auto bg-emerald-700 hover:bg-emerald-800 text-white px-6 py-2.5 rounded-lg font-medium shadow transition">의제 등록</button>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-bold mb-3 text-slate-700 flex items-center gap-1">📢 실시간 학술 타임라인</h2>
+                    <div id="timeline" class="space-y-4">
+                        <p id="no-data-msg" class="text-center text-slate-400 bg-white py-12 rounded-xl border border-dashed border-slate-300 text-sm">등록된 사회 의제가 없습니다. 연구원님의 첫 의제를 공유해 주세요!</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
-    <div class="option-box">
-      <select id="modelSelect">
-        <option value="tts-1">tts-1 빠른 생성</option>
-        <option value="tts-1-hd">tts-1-hd 고품질</option>
-      </select>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-      <select id="voiceSelect">
-        <option value="alloy">alloy</option>
-        <option value="echo">echo</option>
-        <option value="fable">fable</option>
-        <option value="onyx">onyx</option>
-        <option value="nova">nova</option>
-        <option value="shimmer">shimmer</option>
-      </select>
+        let auth, db;
+        let currentUser = null;
 
-      <input id="speedInput" type="number" min="0.25" max="4.0" step="0.05" value="1.0" placeholder="속도" />
-    </div>
+        // [기능 1] 시스템 설정 및 Firebase 초기화 모듈
+        document.getElementById('btn-save-config').addEventListener('click', () => {
+            const configStr = document.getElementById('firebase-config-input').value.trim();
+            const openaiKey = document.getElementById('api-key-openai').value.trim();
 
-    <div>
-      <div class="label">변환할 텍스트</div>
-      <textarea id="textInput" placeholder="음성으로 바꿀 문장을 입력하세요. 예: 안녕하세요. 오늘은 Firebase와 OpenAI API를 활용한 웹페이지 제작을 배워보겠습니다."></textarea>
-    </div>
+            if(!configStr || !openaiKey) {
+                alert('OpenAI API Key와 Firebase Config JSON을 모두 입력해 주세요.');
+                return;
+            }
 
-    <div class="button-row">
-      <button class="clear-btn" id="clearBtn">초기화</button>
-      <button class="make-btn" id="makeBtn">음성 만들기</button>
-    </div>
+            try {
+                const firebaseConfig = JSON.parse(configStr);
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getDatabase(app);
 
-    <div id="status" class="status"></div>
+                // 리스너 연결
+                initAuthListener();
+                initDatabaseListener();
 
-    <div id="resultBox" class="result-box hidden">
-      <div class="label">생성된 음성</div>
-      <audio id="audioPlayer" controls></audio>
-      <div class="button-row">
-        <a id="downloadLink" class="download-link" href="#" download="tts-audio.mp3">mp3 다운로드</a>
-      </div>
-    </div>
-
-    <div class="help">
-      긴 문장은 생성 시간이 오래 걸릴 수 있습니다. 처음에는 짧은 문장으로 테스트해보세요.<br />
-      속도는 0.25부터 4.0까지 조절할 수 있습니다.
-    </div>
-  </div>
-
-  <script>
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxDNMIktE288seW2Mr5YgksYFeAP3SNl8YyQZFa1DuvD0N_8pjRLDmxkZBYyQ4WGPmt/exec';
-
-    const textInput = document.getElementById('textInput');
-    const modelSelect = document.getElementById('modelSelect');
-    const voiceSelect = document.getElementById('voiceSelect');
-    const speedInput = document.getElementById('speedInput');
-    const makeBtn = document.getElementById('makeBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const statusBox = document.getElementById('status');
-    const resultBox = document.getElementById('resultBox');
-    const audioPlayer = document.getElementById('audioPlayer');
-    const downloadLink = document.getElementById('downloadLink');
-
-    makeBtn.addEventListener('click', makeSpeech);
-    clearBtn.addEventListener('click', clearPage);
-
-    textInput.addEventListener('keydown', function(event) {
-      if (event.key === 'Enter' && event.ctrlKey) {
-        makeSpeech();
-      }
-    });
-
-    async function makeSpeech() {
-      const text = textInput.value.trim();
-      const model = modelSelect.value;
-      const voice = voiceSelect.value;
-      const speed = Number(speedInput.value || 1.0);
-
-      if (!text) {
-        alert('음성으로 변환할 텍스트를 입력해주세요.');
-        return;
-      }
-
-      if (speed < 0.25 || speed > 4.0) {
-        alert('속도는 0.25부터 4.0 사이로 입력해주세요.');
-        return;
-      }
-
-      try {
-        setLoading(true);
-        resultBox.classList.add('hidden');
-        statusBox.textContent = 'Apps Script 서버에 TTS 요청을 보내는 중입니다.';
-
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify({
-            type: 'tts',
-            text: text,
-            model: model,
-            voice: voice,
-            speed: speed
-          })
+                alert('시스템 설정이 안전하게 로드되었습니다. 아래에서 로그인을 진행해 주세요!');
+                document.getElementById('auth-card').classList.remove('opacity-60');
+            } catch (e) {
+                alert('Firebase 설정 JSON 규격이 올바르지 않습니다. 중괄호({})를 포함한 정확한 JSON을 입력해 주세요.');
+                console.error(e);
+            }
         });
 
-        const data = await response.json();
-
-        if (data.error) {
-          throw new Error(data.error);
+        // [기능 2] Firebase Authentication 로그인/회원가입 기능
+        function initAuthListener() {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    currentUser = user;
+                    document.getElementById('user-info').textContent = `${user.email} (연구원)`;
+                    document.getElementById('user-info').classList.remove('hidden');
+                    document.getElementById('btn-logout').classList.remove('hidden');
+                    document.getElementById('main-app-area').classList.remove('opacity-40', 'pointer-events-none');
+                    document.getElementById('auth-card').classList.add('hidden');
+                } else {
+                    currentUser = null;
+                    document.getElementById('user-info').classList.add('hidden');
+                    document.getElementById('btn-logout').classList.add('hidden');
+                    document.getElementById('main-app-area').classList.add('opacity-40', 'pointer-events-none');
+                    document.getElementById('auth-card').classList.remove('hidden');
+                }
+            });
         }
 
-        if (!data.audioBase64) {
-          throw new Error('음성 데이터를 받지 못했습니다.');
+        document.getElementById('btn-signup').addEventListener('click', () => {
+            if(!auth) return alert('보안 환경 설정을 먼저 적용해 주세요.');
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            createUserWithEmailAndPassword(auth, email, password)
+                .then(() => alert('사회학 연대 광장 가입에 성공했습니다!'))
+                .catch(err => alert('회원가입 실패: ' + err.message));
+        });
+
+        document.getElementById('btn-login').addEventListener('click', () => {
+            if(!auth) return alert('보안 환경 설정을 먼저 적용해 주세요.');
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
+            signInWithEmailAndPassword(auth, email, password)
+                .then(() => alert('로그인 성공!'))
+                .catch(err => alert('로그인 실패: ' + err.message));
+        });
+
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            signOut(auth).then(() => alert('로그아웃되었습니다.'));
+        });
+
+
+        // [기능 3] API 기반 생성형 인공지능 (OpenAI GPT) 연동 기능
+        async function analyzeWithGPT(userText) {
+            const apiKey = document.getElementById('api-key-openai').value.trim();
+            if(!apiKey) return "AI 분석 실패 (OpenAI API Key가 설정되지 않았습니다.)";
+
+            const sociologyPrompt = `당신은 세계적인 석학이자 진보적인 사회학자입니다. UN의 SDG 17(지속가능발전을 위한 글로벌 파트너십/연대) 관점에서 다음 사회적 문제 제기를 분석해주세요. 갈등이론, 구조기능주의, 상징적 상호작용론 등 전문 사회학 용어를 반드시 1개 이상 사용하여 명쾌하고 깊이 있게 3줄 이내로 비평문을 작성하세요.\n\n시민 의제: ${userText}`;
+
+            try {
+                const response = await fetch(`https://api.openai.com/v1/chat/completions`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-4o-mini", // 속도가 빠르고 비용이 경제적인 최적 모델 사용
+                        messages: [{ role: "user", content: sociologyPrompt }],
+                        temperature: 0.75
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.choices && data.choices.length > 0) {
+                    return data.choices[0].message.content;
+                } else {
+                    return "GPT 응답 분석 실패: " + (data.error ? data.error.message : "알 수 없는 API 에러");
+                }
+            } catch (error) {
+                console.error(error);
+                return "OpenAI API 호출 중 통신 에러가 발생했습니다.";
+            }
         }
 
-        const audioUrl = base64ToAudioUrl(data.audioBase64, 'audio/mpeg');
 
-        audioPlayer.src = audioUrl;
-        downloadLink.href = audioUrl;
-        downloadLink.download = makeFileName();
-        resultBox.classList.remove('hidden');
-        statusBox.textContent = '음성 생성 완료';
-      } catch (error) {
-        console.error(error);
-        statusBox.textContent = '요청 실패';
-        alert('오류가 발생했습니다.\n\n' + error.message);
-      } finally {
-        setLoading(false);
-      }
-    }
+        // [기능 4] Firebase Realtime Database 실시간 데이터 저장 및 바인딩
+        document.getElementById('btn-submit-issue').addEventListener('click', async () => {
+            const text = document.getElementById('issue-text').value;
+            if(!text.trim()) return alert('발제할 의제 내용을 입력해 주세요.');
 
-    function base64ToAudioUrl(base64, mimeType) {
-      const byteCharacters = atob(base64);
-      const byteArrays = [];
+            const btnSubmit = document.getElementById('btn-submit-issue');
+            btnSubmit.innerText = "GPT 사회학자 분석 중...";
+            btnSubmit.disabled = true;
 
-      for (let offset = 0; offset < byteCharacters.length; offset += 512) {
-        const slice = byteCharacters.slice(offset, offset + 512);
-        const byteNumbers = new Array(slice.length);
+            // GPT 비평문 생성 호출
+            const gptAnalysis = await analyzeWithGPT(text);
 
-        for (let i = 0; i < slice.length; i++) {
-          byteNumbers[i] = slice.charCodeAt(i);
+            const postData = {
+                email: currentUser.email,
+                issue: text,
+                aiResponse: gptAnalysis,
+                timestamp: new Date().toLocaleString()
+            };
+
+            // Firebase RTDB push
+            push(ref(db, 'issues'), postData).then(() => {
+                document.getElementById('issue-text').value = '';
+                btnSubmit.innerText = "의제 등록";
+                btnSubmit.disabled = false;
+            }).catch(err => {
+                alert("데이터 저장 실패: " + err.message);
+                btnSubmit.innerText = "의제 등록";
+                btnSubmit.disabled = false;
+            });
+        });
+
+        // 실시간 피드 업데이트 리스너
+        function initDatabaseListener() {
+            const timeline = document.getElementById('timeline');
+            const noDataMsg = document.getElementById('no-data-msg');
+
+            onChildAdded(ref(db, 'issues'), (snapshot) => {
+                if(noDataMsg) noDataMsg.remove();
+
+                const data = snapshot.val();
+                const card = document.createElement('div');
+                card.className = "bg-white p-5 rounded-xl shadow-sm border border-l-4 border-emerald-600 space-y-3 transition hover:shadow-md";
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-center text-xs text-slate-500">
+                        <span class="font-bold text-emerald-800">🔬 연구원: ${data.email}</span>
+                        <span>${data.timestamp}</span>
+                    </div>
+                    <p class="text-slate-900 font-semibold text-sm md:text-base">Q. ${data.issue}</p>
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-sm">
+                        <div class="flex justify-between items-center mb-1.5">
+                            <span class="font-bold text-xs text-emerald-900 flex items-center gap-1">🤖 GPT 전문 사회학자 비평</span>
+                            <button class="btn-tts text-xs bg-emerald-700 text-white px-2.5 py-1 rounded hover:bg-emerald-800 transition shadow-xs flex items-center gap-1">🔊 청취하기</button>
+                        </div>
+                        <p class="text-slate-700 leading-relaxed text-xs md:text-sm msg-content font-serif">${data.aiResponse}</p>
+                    </div>
+                `;
+
+                // [기능 5] 브라우저 내장 Web Speech API Web TTS 음성 출력 기능
+                card.querySelector('.btn-tts').addEventListener('click', () => {
+                    const textToSpeak = card.querySelector('.msg-content').innerText;
+                    
+                    // 재생 중인 오디오 초기화
+                    window.speechSynthesis.cancel();
+
+                    const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                    utterance.lang = 'ko-KR'; 
+                    utterance.rate = 1.0;     
+                    utterance.pitch = 1.0;
+                    
+                    window.speechSynthesis.speak(utterance);
+                });
+
+                // 최신 글이 최상단에 배치되도록 역순 배치
+                timeline.insertBefore(card, timeline.firstChild);
+            });
         }
-
-        const byteArray = new Uint8Array(byteNumbers);
-        byteArrays.push(byteArray);
-      }
-
-      const blob = new Blob(byteArrays, { type: mimeType });
-      return URL.createObjectURL(blob);
-    }
-
-    function makeFileName() {
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      const hour = String(now.getHours()).padStart(2, '0');
-      const minute = String(now.getMinutes()).padStart(2, '0');
-      return `tts-${year}${month}${day}-${hour}${minute}.mp3`;
-    }
-
-    function setLoading(isLoading) {
-      makeBtn.disabled = isLoading;
-      makeBtn.textContent = isLoading ? '생성 중...' : '음성 만들기';
-    }
-
-    function clearPage() {
-      textInput.value = '';
-      statusBox.textContent = '';
-      audioPlayer.removeAttribute('src');
-      downloadLink.href = '#';
-      resultBox.classList.add('hidden');
-    }
-  </script>
+    </script>
 </body>
 </html>
-
-
