@@ -1,258 +1,237 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ChatGPT 질문 답변 페이지</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사회학적 시선: 현상 분석 AI</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-color: #ffffff;
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --text-color: #333333;
+        }
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: var(--card-color);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 { text-align: center; color: var(--primary-color); margin-top: 0; }
+        .auth-section, .main-section { display: none; }
+        .active { display: block; }
+        input, textarea, button {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        button:hover { background-color: #1a252f; }
+        .btn-accent { background-color: var(--accent-color); }
+        .btn-accent:hover { background-color: #2980b9; }
+        .user-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        #output-box {
+            background: #f8f9fa;
+            border-left: 5px solid var(--accent-color);
+            padding: 15px;
+            margin-top: 20px;
+            min-height: 80px;
+            white-space: pre-wrap;
+            border-radius: 0 6px 6px 0;
+        }
+        .tts-controls { display: flex; gap: 10px; margin-top: 10px; }
+    </style>
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #e3f2fd, #fce4ec);
-      font-family: Arial, sans-serif;
-      color: #333;
-    }
-
-    .container {
-      width: min(900px, 92%);
-      margin: 40px auto;
-      background: #ffffff;
-      border-radius: 24px;
-      padding: 28px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.16);
-    }
-
-    h1 {
-      margin: 0 0 8px;
-      text-align: center;
-      font-size: 28px;
-    }
-
-    .subtitle {
-      text-align: center;
-      color: #777;
-      margin-bottom: 24px;
-      font-size: 14px;
-    }
-
-    .info {
-      padding: 14px;
-      margin-bottom: 20px;
-      border-radius: 14px;
-      background: #e8f5e9;
-      color: #2e7d32;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .chat-box {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 140px;
-      resize: vertical;
-      padding: 16px;
-      border: 1px solid #ddd;
-      border-radius: 16px;
-      font-size: 16px;
-      line-height: 1.5;
-      outline: none;
-      font-family: Arial, sans-serif;
-    }
-
-    textarea:focus {
-      border-color: #42a5f5;
-      box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.15);
-    }
-
-    .button-row {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-    }
-
-    button {
-      border: none;
-      border-radius: 12px;
-      padding: 0 18px;
-      height: 46px;
-      font-size: 15px;
-      cursor: pointer;
-      transition: 0.15s;
-      font-weight: bold;
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      opacity: 0.9;
-    }
-
-    button:disabled {
-      cursor: not-allowed;
-      opacity: 0.6;
-      transform: none;
-    }
-
-    .ask-btn {
-      background: #42a5f5;
-      color: white;
-    }
-
-    .clear-btn {
-      background: #b0bec5;
-      color: white;
-    }
-
-    .answer-box {
-      min-height: 220px;
-      padding: 18px;
-      border-radius: 18px;
-      background: #f7f9fb;
-      border: 1px solid #edf1f5;
-      line-height: 1.7;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .status {
-      min-height: 24px;
-      color: #555;
-      font-size: 14px;
-    }
-
-    .label {
-      font-weight: bold;
-      margin-bottom: 6px;
-    }
-
-    .help {
-      margin-top: 12px;
-      font-size: 13px;
-      color: #777;
-      line-height: 1.6;
-    }
-
-    @media (max-width: 700px) {
-      .button-row {
-        justify-content: stretch;
-      }
-
-      button {
-        width: 100%;
-      }
-    }
-  </style>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>ChatGPT 질문 답변</h1>
-    <div class="subtitle">GitHub Pages + Google Apps Script + OpenAI API 연동</div>
 
-    <div class="info">
-      현재 구조: GitHub Pages 화면 → Google Apps Script 서버 → OpenAI API → 답변 반환<br />
-      API Key는 index.html에 들어가지 않고 Apps Script의 스크립트 속성에 저장됩니다.
+<div class="container">
+    <h1>🔬 사회학적 시선 AI</h1>
+    
+    <div id="auth-section" class="auth-section active">
+        <h3>로그인 / 회원가입</h3>
+        <input type="email" id="auth-email" placeholder="이메일 주소">
+        <input type="password" id="auth-password" placeholder="비밀번호 (6자리 이상)">
+        <button id="btn-login">로그인</button>
+        <button id="btn-signup" class="btn-accent">이메일로 회원가입</button>
     </div>
 
-    <div class="chat-box">
-      <div>
-        <div class="label">질문</div>
-        <textarea id="questionInput" placeholder="질문을 입력하세요. 예: 고등학생에게 파이썬 반복문을 쉽게 설명해줘."></textarea>
-      </div>
+    <div id="main-section" class="main-section">
+        <div class="user-info">
+            <span id="user-display">사용자님 환영합니다.</span>
+            <button id="btn-logout" style="width: auto; padding: 5px 10px; margin: 0;">로그아웃</button>
+        </div>
 
-      <div class="button-row">
-        <button class="clear-btn" id="clearBtn">초기화</button>
-        <button class="ask-btn" id="askBtn">질문하기</button>
-      </div>
+        <h3>분석할 사회 현상 입력</h3>
+        <textarea id="user-input" rows="4" placeholder="예시: 최근 1인 가구가 급증하는 현상을 사회학적으로 설명해줘. 또는 스마트폰 중독 현상 등..."></textarea>
+        <button id="btn-analyze" class="btn-accent">사회학적 관점으로 분석하기</button>
 
-      <div id="status" class="status"></div>
-
-      <div>
-        <div class="label">답변</div>
-        <div id="answerBox" class="answer-box">아직 답변이 없습니다.</div>
-      </div>
-
-      <div class="help">
-        단축키: 질문 입력창에서 Ctrl + Enter를 누르면 질문이 전송됩니다.<br />
-        오류가 발생하면 Apps Script 배포 권한이 “모든 사용자”인지 확인하세요.
-      </div>
+        <div id="output-area" style="display:none;">
+            <h3>🧐 사회학자 AI의 분석 결과</h3>
+            <div id="output-box">결과를 기다리는 중...</div>
+            
+            <div class="tts-controls">
+                <button id="btn-speak">🔊 음성으로 듣기</button>
+                <button id="btn-stop" class="btn-accent" style="background-color: #e74c3c;">⏱️ 정지</button>
+            </div>
+        </div>
     </div>
-  </div>
+</div>
 
-  <script>
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyTS-n6dNxhXGHxck-BL97z9l2PPrqZbl0tqjtPIP44MVFtyOiTwizk4jva8GMuV38p/exec';
+<script>
+    // --- [중요] Firebase 설정 정보 입력 ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyB_uDSpt4pSJDnov0z4sRcjvzTHoYE4Bz8",
+        authDomain: "tngodvjqjqjd.firebaseapp.com",
+        projectId: "tngodvjqjqjd",
+        storageBucket: "tngodvjqjqjd.firebasestorage.app",
+        messagingSenderId: ""613583590570",
+        appId: "1:613583590570:web:dd05d84365d7a0de5fecd3"
+    };
+    
+    // --- [중요] 배포한 Google Apps Script 웹 앱 URL 입력 ---
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbx7G2k5od1mkbg010TMNyctJOFx_jPGsvsNf4z2hPB7Un-BBwRGPog45jp0zVQARF7y/exec";
 
-    const questionInput = document.getElementById('questionInput');
-    const answerBox = document.getElementById('answerBox');
-    const statusBox = document.getElementById('status');
-    const askBtn = document.getElementById('askBtn');
-    const clearBtn = document.getElementById('clearBtn');
+    // Firebase 초기화
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-    askBtn.addEventListener('click', askChatGPT);
-    clearBtn.addEventListener('click', clearPage);
+    // DOM 요소 가져오기
+    const authSection = document.getElementById('auth-section');
+    const mainSection = document.getElementById('main-section');
+    const emailInput = document.getElementById('auth-email');
+    const passwordInput = document.getElementById('auth-password');
+    const userInput = document.getElementById('user-input');
+    const outputBox = document.getElementById('output-box');
+    const outputArea = document.getElementById('output-area');
 
-    questionInput.addEventListener('keydown', function(event) {
-      if (event.key === 'Enter' && event.ctrlKey) {
-        askChatGPT();
-      }
+    let currentUser = null;
+
+    // 인증 상태 변화 감지
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            currentUser = user;
+            authSection.classList.remove('active');
+            mainSection.classList.add('active');
+            document.getElementById('user-display').innerText = `${user.email} 님`;
+        } else {
+            currentUser = null;
+            authSection.classList.add('active');
+            mainSection.classList.remove('active');
+        }
     });
 
-    async function askChatGPT() {
-      const question = questionInput.value.trim();
+    // 회원가입
+    document.getElementById('btn-signup').addEventListener('click', () => {
+        auth.createUserWithEmailAndPassword(emailInput.value, passwordInput.value)
+            .then(() => alert('회원가입 성공!'))
+            .catch(err => alert('회원가입 실패: ' + err.message));
+    });
 
-      if (!question) {
-        alert('질문을 입력해주세요.');
-        return;
-      }
+    // 로그인
+    document.getElementById('btn-login').addEventListener('click', () => {
+        auth.signInWithEmailAndPassword(emailInput.value, passwordInput.value)
+            .catch(err => alert('로그인 실패: ' + err.message));
+    });
 
-      try {
-        setLoading(true);
-        answerBox.textContent = '답변을 생성하는 중입니다...';
-        statusBox.textContent = 'Apps Script 서버에 요청을 보내는 중입니다.';
+    // 로그아웃
+    document.getElementById('btn-logout').addEventListener('click', () => {
+        auth.signOut();
+    });
 
-        const response = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify({
-            question: question
-          })
-        });
+    // AI 분석 요청 및 Firebase 데이터 연동
+    document.getElementById('btn-analyze').addEventListener('click', async () => {
+        const prompt = userInput.value.trim();
+        if(!prompt) return alert('현상을 입력해주세요.');
 
-        const data = await response.json();
+        outputArea.style.display = 'block';
+        outputBox.innerText = "사회학적 이론을 바탕으로 현상을 심층 분석 중입니다. 잠시만 기다려주세요...";
 
-        if (data.error) {
-          throw new Error(data.error);
+        try {
+            // Apps Script 백엔드로 프록시 요청 (API Key 보호)
+            const response = await fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ prompt: prompt })
+            });
+            const data = await response.json();
+
+            if(data.reply) {
+                outputBox.innerText = data.reply;
+
+                // Firebase Firestore에 유저별로 질문과 답변 저장 연동
+                if(currentUser) {
+                    db.collection("sociology_history").add({
+                        uid: currentUser.uid,
+                        userEmail: currentUser.email,
+                        question: prompt,
+                        analysis: data.reply,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    }).then(() => {
+                        console.log("Firebase에 분석 기록이 성공적으로 저장되었습니다.");
+                    }).catch(e => console.error("Firebase 저장 에러:", e));
+                }
+            } else {
+                outputBox.innerText = "오류가 발생했습니다: " + (data.error || "알 수 없는 에러");
+            }
+        } catch (error) {
+            outputBox.innerText = "네트워크 오류가 발생했습니다: " + error.message;
         }
+    });
 
-        answerBox.textContent = data.answer || '답변을 가져오지 못했습니다.';
-        statusBox.textContent = '답변 생성 완료';
-      } catch (error) {
-        console.error(error);
-        answerBox.textContent = '오류가 발생했습니다.\n\n' + error.message;
-        statusBox.textContent = '요청 실패';
-      } finally {
-        setLoading(false);
-      }
-    }
+    // Web Speech API 활용 내장 TTS 기능 (비용 무료, 별도 서버 불필요)
+    const synth = window.speechSynthesis;
+    
+    document.getElementById('btn-speak').addEventListener('click', () => {
+        const text = outputBox.innerText;
+        if (!text || text.startsWith("사회학적") || text.startsWith("결과를")) return;
 
-    function setLoading(isLoading) {
-      askBtn.disabled = isLoading;
-      askBtn.textContent = isLoading ? '생성 중...' : '질문하기';
-    }
+        // 진행중인 음성이 있다면 취소
+        synth.cancel();
 
-    function clearPage() {
-      questionInput.value = '';
-      answerBox.textContent = '아직 답변이 없습니다.';
-      statusBox.textContent = '';
-    }
-  </script>
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ko-KR'; // 한국어 설정
+        utterance.rate = 1.0;     // 속도 설정
+
+        // 브라우저별 한국어 목소리 매칭 최적화
+        const voices = synth.getVoices();
+        const korVoice = voices.find(voice => voice.lang.includes('KO') || voice.lang.includes('ko'));
+        if (korVoice) utterance.voice = korVoice;
+
+        synth.speak(utterance);
+    });
+
+    document.getElementById('btn-stop').addEventListener('click', () => {
+        synth.cancel();
+    });
+</script>
 </body>
 </html>
-
