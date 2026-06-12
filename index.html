@@ -69,7 +69,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -107,14 +107,16 @@
 </div>
 
 <script>
-    // --- [중요] Firebase 설정 정보 입력 ---
+    // --- [중요] Firebase 프로젝트 설정 정보 입력 ---
     const firebaseConfig = {
-        apiKey: "AIzaSyB_uDSpt4pSJDnov0z4sRcjvzTHoYE4Bz8",
-        authDomain: "tngodvjqjqjd.firebaseapp.com",
-        projectId: "tngodvjqjqjd",
-        storageBucket: "tngodvjqjqjd.firebasestorage.app",
-        messagingSenderId: ""613583590570",
-        appId: "1:613583590570:web:dd05d84365d7a0de5fecd3"
+    apiKey: "AIzaSyB_uDSpt4pSJDnov0z4sRcjvzTHoYE4Bz8",
+    authDomain: "tngodvjqjqjd.firebaseapp.com",
+    databaseURL: "https://tngodvjqjqjd-default-rtdb.firebaseio.com",
+    projectId: "tngodvjqjqjd",
+    storageBucket: "tngodvjqjqjd.firebasestorage.app",
+    messagingSenderId: "613583590570",
+    appId: "1:613583590570:web:dd05d84365d7a0de5fecd3",
+    measurementId: "G-Z6VL54WZPD"
     };
     
     // --- [중요] 배포한 Google Apps Script 웹 앱 URL 입력 ---
@@ -123,7 +125,7 @@
     // Firebase 초기화
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-    const db = firebase.firestore();
+    const db = firebase.database(); // Realtime Database 인스턴스 사용
 
     // DOM 요소 가져오기
     const authSection = document.getElementById('auth-section');
@@ -168,7 +170,7 @@
         auth.signOut();
     });
 
-    // AI 분석 요청 및 Firebase 데이터 연동
+    // AI 분석 요청 및 Realtime Database 데이터 연동
     document.getElementById('btn-analyze').addEventListener('click', async () => {
         const prompt = userInput.value.trim();
         if(!prompt) return alert('현상을 입력해주세요.');
@@ -177,7 +179,7 @@
         outputBox.innerText = "사회학적 이론을 바탕으로 현상을 심층 분석 중입니다. 잠시만 기다려주세요...";
 
         try {
-            // Apps Script 백엔드로 프록시 요청 (API Key 보호)
+            // Apps Script 백엔드로 요청 (API Key 보호)
             const response = await fetch(GAS_URL, {
                 method: 'POST',
                 body: JSON.stringify({ prompt: prompt })
@@ -187,17 +189,15 @@
             if(data.reply) {
                 outputBox.innerText = data.reply;
 
-                // Firebase Firestore에 유저별로 질문과 답변 저장 연동
+                // Realtime Database 기존 유저 데이터 트리 구조에 맞추어 저장 연동
                 if(currentUser) {
-                    db.collection("sociology_history").add({
-                        uid: currentUser.uid,
-                        userEmail: currentUser.email,
-                        question: prompt,
-                        analysis: data.reply,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    db.ref("users/" + currentUser.uid + "/items").push({
+                        title: prompt.substring(0, 15) + "...", // 질문 앞부분을 제목으로 자동 요약
+                        content: data.reply,
+                        createdAt: new Date().toLocaleString()
                     }).then(() => {
-                        console.log("Firebase에 분석 기록이 성공적으로 저장되었습니다.");
-                    }).catch(e => console.error("Firebase 저장 에러:", e));
+                        console.log("Realtime Database에 성공적으로 저장되었습니다.");
+                    }).catch(e => console.error("데이터베이스 저장 에러:", e));
                 }
             } else {
                 outputBox.innerText = "오류가 발생했습니다: " + (data.error || "알 수 없는 에러");
@@ -207,21 +207,19 @@
         }
     });
 
-    // Web Speech API 활용 내장 TTS 기능 (비용 무료, 별도 서버 불필요)
+    // Web Speech API 활용 내장 TTS 기능
     const synth = window.speechSynthesis;
     
     document.getElementById('btn-speak').addEventListener('click', () => {
         const text = outputBox.innerText;
         if (!text || text.startsWith("사회학적") || text.startsWith("결과를")) return;
 
-        // 진행중인 음성이 있다면 취소
-        synth.cancel();
+        synth.cancel(); // 작동 중인 음성이 있다면 취소
 
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'ko-KR'; // 한국어 설정
-        utterance.rate = 1.0;     // 속도 설정
+        utterance.lang = 'ko-KR'; 
+        utterance.rate = 1.0;     
 
-        // 브라우저별 한국어 목소리 매칭 최적화
         const voices = synth.getVoices();
         const korVoice = voices.find(voice => voice.lang.includes('KO') || voice.lang.includes('ko'));
         if (korVoice) utterance.voice = korVoice;
